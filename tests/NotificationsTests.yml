@@ -1,0 +1,51 @@
+ilateral\SilverStripe\Notifier\Model\Notification:
+  create:
+    BaseClass: ilateral\SilverStripe\Notifier\Tests\Objects\TestCreateObject
+    StateCreated: true
+  update:
+    BaseClass: ilateral\SilverStripe\Notifier\Tests\Objects\TestUpdateObject
+    StateUpdated: true
+  updaterules_namechanged:
+    BaseClass: ilateral\SilverStripe\Notifier\Tests\Objects\TestChangeNameObject
+  updaterules_statuspaid:
+    BaseClass: ilateral\SilverStripe\Notifier\Tests\Objects\TestStatusPaidObject
+  delete:
+    BaseClass: ilateral\SilverStripe\Notifier\Tests\Objects\TestDeleteObject
+    StateDeleted: true
+
+ilateral\SilverStripe\Notifier\Types\EmailNotification:
+  created:
+    From: 'sender@ilateral.co.uk'
+    Recipient: 'recipient@ilateral.co.uk'
+    Subject: 'Created Subject'
+    Notification: =>ilateral\SilverStripe\Notifier\Model\Notification.create
+  updated:
+    From: 'sender@ilateral.co.uk'
+    Recipient: 'recipient@ilateral.co.uk'
+    Subject: 'Updated Subject'
+    Notification: =>ilateral\SilverStripe\Notifier\Model\Notification.update
+  updaterules_namechanged:
+    From: 'sender@ilateral.co.uk'
+    Recipient: 'recipient@ilateral.co.uk'
+    Subject: 'Updated Name'
+    Notification: =>ilateral\SilverStripe\Notifier\Model\Notification.updaterules_namechanged
+  updaterules_statuspaid:
+    From: 'sender@ilateral.co.uk'
+    Recipient: 'recipient@ilateral.co.uk'
+    Subject: 'Updated To Status Paid'
+    Notification: =>ilateral\SilverStripe\Notifier\Model\Notification.updaterules_statuspaid
+  deleted:
+    From: 'sender@ilateral.co.uk'
+    Recipient: 'recipient@ilateral.co.uk'
+    Subject: 'Deleted Subject'
+    Notification: =>ilateral\SilverStripe\Notifier\Model\Notification.delete
+
+ilateral\SilverStripe\Notifier\Model\NotificationRule:
+  namechanged:
+    FieldName: Name
+    WasChanged: true
+    Notification: =>ilateral\SilverStripe\Notifier\Model\Notification.updaterules_namechanged
+  statuspaid:
+    FieldName: Status
+    Value: paid
+    Notification: =>ilateral\SilverStripe\Notifier\Model\Notification.updaterules_statuspaid
