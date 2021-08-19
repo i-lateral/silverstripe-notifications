@@ -12,6 +12,7 @@ use ilateral\SilverStripe\Notifier\Tests\Objects\TestChangeNameObject;
 use ilateral\SilverStripe\Notifier\Tests\Objects\TestCreateObject;
 use ilateral\SilverStripe\Notifier\Tests\Objects\TestDeleteObject;
 use ilateral\SilverStripe\Notifier\Tests\Objects\TestStatusPaidObject;
+use ilateral\SilverStripe\Notifier\Tests\Objects\TestSubjectObject;
 use ilateral\SilverStripe\Notifier\Tests\Objects\TestUpdateObject;
 
 class NotificationsTest extends SapphireTest
@@ -25,13 +26,9 @@ class NotificationsTest extends SapphireTest
         TestUpdateObject::class,
         TestDeleteObject::class,
         TestChangeNameObject::class,
-        TestStatusPaidObject::class
+        TestStatusPaidObject::class,
+        TestSubjectObject::class
     ];
-
-    protected function setup()
-    {
-        parent::setUp();
-    }
 
     public function testSuccessfullyRegistered()
     {
@@ -176,6 +173,22 @@ class NotificationsTest extends SapphireTest
             'recipient@ilateral.co.uk',
             'sender@ilateral.co.uk',
             'Deleted Subject'
+        );
+    }
+
+    public function testSubjectRendered()
+    {
+        $object = TestSubjectObject::create();
+        $object->write();
+
+        $object->Name = "Test name";
+        $object->write();
+
+        // Ensure update email was sent
+        $this->assertEmailSent(
+            'recipient@ilateral.co.uk',
+            'sender@ilateral.co.uk',
+            'Field Changed To Test name'
         );
     }
 }

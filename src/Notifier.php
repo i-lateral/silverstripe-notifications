@@ -7,6 +7,7 @@ use SilverStripe\ORM\DataObject;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Injector\Injectable;
 use ilateral\SilverStripe\Notifier\Model\Notification;
+use ilateral\SilverStripe\Notifier\Types\NotificationType;
 
 class Notifier
 {
@@ -27,8 +28,10 @@ class Notifier
     {
         /** @var Notification $notification */
         foreach ($notifications as $notification) {
-            foreach ($notification->Types() as $notification_type) {                
-                $notification_type->send($object);
+            foreach ($notification->Types() as $notification_type) {
+                /** @var NotificationType $notification_type  */
+                $notification_type->setObject($object);
+                $notification_type->send();
             }
         }
     }

@@ -9,6 +9,8 @@ ilateral\SilverStripe\Notifier\Model\Notification:
     BaseClass: ilateral\SilverStripe\Notifier\Tests\Objects\TestChangeNameObject
   updaterules_statuspaid:
     BaseClass: ilateral\SilverStripe\Notifier\Tests\Objects\TestStatusPaidObject
+  subject:
+    BaseClass: ilateral\SilverStripe\Notifier\Tests\Objects\TestSubjectObject
   delete:
     BaseClass: ilateral\SilverStripe\Notifier\Tests\Objects\TestDeleteObject
     StateDeleted: true
@@ -34,6 +36,11 @@ ilateral\SilverStripe\Notifier\Types\EmailNotification:
     Recipient: 'recipient@ilateral.co.uk'
     Subject: 'Updated To Status Paid'
     Notification: =>ilateral\SilverStripe\Notifier\Model\Notification.updaterules_statuspaid
+  subject:
+    From: 'sender@ilateral.co.uk'
+    Recipient: 'recipient@ilateral.co.uk'
+    Subject: 'Field Changed To {$Name}'
+    Notification: =>ilateral\SilverStripe\Notifier\Model\Notification.subject
   deleted:
     From: 'sender@ilateral.co.uk'
     Recipient: 'recipient@ilateral.co.uk'
@@ -45,6 +52,10 @@ ilateral\SilverStripe\Notifier\Model\NotificationRule:
     FieldName: Name
     WasChanged: true
     Notification: =>ilateral\SilverStripe\Notifier\Model\Notification.updaterules_namechanged
+  namechanged_two:
+    FieldName: Name
+    WasChanged: true
+    Notification: =>ilateral\SilverStripe\Notifier\Model\Notification.subject
   statuspaid:
     FieldName: Status
     Value: paid

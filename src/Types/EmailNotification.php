@@ -3,9 +3,6 @@
 namespace ilateral\SilverStripe\Notifier\Types;
 
 use SilverStripe\Control\Email\Email;
-use SilverStripe\Core\Environment;
-use SilverStripe\Core\Injector\Injector;
-use SilverStripe\Dev\SapphireTest;
 
 /**
  * Simple wrapper for SilverStripe email notoifications
@@ -24,6 +21,21 @@ class EmailNotification extends NotificationType
         'Subject' => 'Varchar'
     ];
 
+    private static $casting = [
+        'RenderedSubject' => 'Varchar'
+    ];
+
+    /**
+     * Return a rendered version of this notification's subject using the
+     * current object as a base
+     *
+     * @return string
+     */
+    public function getRenderedSubject(): string
+    {
+        return $this->renderString((string) $this->Subject);
+    }
+
     public function send($custom_recipient = null)
     {
         $recipient = (empty($custom_recipent)) ? $this->Recipient : $custom_recipient;
@@ -33,9 +45,9 @@ class EmailNotification extends NotificationType
         $email
             ->setTo($recipient)
             ->setFrom($from)
-            ->setSubject($this->Subject)
+            ->setSubject($this->getRenderedSubject())
             ->setData([
-                'Content' => $this->Content,
+                'Content' => $this->getRenderedContent(),
             ])->setHTMLTemplate($this->config()->template)
             ->send();
         
