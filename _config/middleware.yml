@@ -1,0 +1,10 @@
+---
+Name: notifiermiddleware
+After:
+  - requestprocessors
+---
+SilverStripe\Core\Injector\Injector:
+  SilverStripe\Control\Director:
+    properties:
+      Middlewares:
+        NotificationMiddleware: '%$ilateral\SilverStripe\Notifier\Middleware\NotificationMiddleware'

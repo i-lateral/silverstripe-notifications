@@ -46,8 +46,20 @@ class NotificationType extends DataObject
     ];
 
     private static $casting = [
+        'Type' => 'Varchar',
         'RenderedContent' => 'Text'
     ];
+
+    private static $summary_fields = [
+        'Type',
+        'From',
+        'Recipient'
+    ];
+
+    public function getType()
+    {
+        return $this->i18n_singular_name();
+    }
 
     /**
      * Return a rendered version of this notification's content using the
@@ -84,7 +96,7 @@ class NotificationType extends DataObject
      */ 
     public function setObject(DataObject $object): self
     {
-        $base_class = $this->Notification()->BaseClass;
+        $base_class = $this->Notification()->BaseClassName;
 
         if (!is_a($object, $base_class)) {
             throw new LogicException('Object must be of type: ' . $base_class);

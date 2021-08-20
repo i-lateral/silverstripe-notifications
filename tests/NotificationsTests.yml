@@ -1,18 +1,18 @@
 ilateral\SilverStripe\Notifier\Model\Notification:
   create:
-    BaseClass: ilateral\SilverStripe\Notifier\Tests\Objects\TestCreateObject
+    BaseClassName: ilateral\SilverStripe\Notifier\Tests\Objects\TestCreateObject
     StateCreated: true
   update:
-    BaseClass: ilateral\SilverStripe\Notifier\Tests\Objects\TestUpdateObject
+    BaseClassName: ilateral\SilverStripe\Notifier\Tests\Objects\TestUpdateObject
     StateUpdated: true
   updaterules_namechanged:
-    BaseClass: ilateral\SilverStripe\Notifier\Tests\Objects\TestChangeNameObject
+    BaseClassName: ilateral\SilverStripe\Notifier\Tests\Objects\TestChangeNameObject
   updaterules_statuspaid:
-    BaseClass: ilateral\SilverStripe\Notifier\Tests\Objects\TestStatusPaidObject
+    BaseClassName: ilateral\SilverStripe\Notifier\Tests\Objects\TestStatusPaidObject
   subject:
-    BaseClass: ilateral\SilverStripe\Notifier\Tests\Objects\TestSubjectObject
+    BaseClassName: ilateral\SilverStripe\Notifier\Tests\Objects\TestSubjectObject
   delete:
-    BaseClass: ilateral\SilverStripe\Notifier\Tests\Objects\TestDeleteObject
+    BaseClassName: ilateral\SilverStripe\Notifier\Tests\Objects\TestDeleteObject
     StateDeleted: true
 
 ilateral\SilverStripe\Notifier\Types\EmailNotification:

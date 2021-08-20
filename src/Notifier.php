@@ -8,6 +8,7 @@ use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Injector\Injectable;
 use ilateral\SilverStripe\Notifier\Model\Notification;
 use ilateral\SilverStripe\Notifier\Types\NotificationType;
+use SilverStripe\Core\Injector\Injector;
 
 class Notifier
 {
@@ -20,6 +21,24 @@ class Notifier
      * @var array
      */
     private static $registered_objects = [];
+
+    /**
+     * Generate a list of reguistered objects with the object's
+     * short name as value
+     */
+    public static function getRegisteredObjectsArray(): array
+    {
+        $list = self::config()->get('registered_objects');
+        $return = [];
+
+        foreach ($list as $classname) {
+            /** @var DataObject */
+            $obj = Injector::inst()->get($classname);
+            $return[$classname] = $obj->i18n_singular_name();
+        }
+
+        return $return;
+    }
 
     /**
      * Process and send a list of notifications based on their provided type

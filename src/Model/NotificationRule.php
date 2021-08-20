@@ -3,6 +3,9 @@
 namespace ilateral\SilverStripe\Notifier\Model;
 
 use SilverStripe\ORM\DataObject;
+use SilverStripe\Forms\FieldList;
+use ilateral\SilverStripe\Notifier\Model\Notification;
+use SilverStripe\Forms\DropdownField;
 
 /**
  * @param string FieldName
@@ -30,4 +33,44 @@ class NotificationRule extends DataObject
         'WasChanged' => 'Was the field changed at all',
         'Value' => 'Value is equal to'
     ];
+
+    /**
+     * Get a list of valid field names and their labels
+     *
+     * @return array
+     */
+    public function getValidFields(): array
+    {
+        $fields = [];
+        $class = $this->Notification()->BaseClassName;
+
+        if (!empty($class) && class_exists($class)) {
+            $obj = singleton($class);
+
+            foreach ($obj::config()->get('db') as $field => $type) {
+                $fields[$field] = $obj->fieldLabel($field);
+            }
+        }
+
+        return $fields;
+    }
+
+    public function getCMSFields()
+    {
+        $self = $this;
+        $this->beforeUpdateCMSFields(
+            function (FieldList $fields) use ($self) {
+                $fields->replaceField(
+                    'FieldName',
+                    DropdownField::create(
+                        'FieldName',
+                        $this->fieldLabel('FieldName'),
+                        $this->getValidFields()
+                    )
+                );
+            }
+        );
+
+        return parent::getCMSFields();
+    }
 }

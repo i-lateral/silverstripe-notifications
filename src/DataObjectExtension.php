@@ -25,11 +25,11 @@ class DataObjectExtension extends DataExtension
         }
 
         $notifications = Notification::get()
-            ->filter('BaseClass', $owner->ClassName);
+            ->filter('BaseClassName', $owner->ClassName);
 
         // Get a list of all relevent rules
         $rules = NotificationRule::get()->filter([
-            'Notification.BaseClass' => $owner->ClassName,
+            'Notification.BaseClassName' => $owner->ClassName,
             'FieldName' => array_keys($changed_fields),
             'Value:not' => null
         ]);
@@ -99,7 +99,7 @@ class DataObjectExtension extends DataExtension
 
         $notifications = Notification::get()->filter(
             [
-                'BaseClass' => $owner->ClassName,
+                'BaseClassName' => $owner->ClassName,
                 Notification::STATE_DELETED => true
             ]
         );

@@ -2,9 +2,11 @@
 
 namespace ilateral\SilverStripe\Notifier\Middleware;
 
-use SilverStripe\Control\Middleware\HTTPMiddleware;
-use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Core\Config\Config;
+use SilverStripe\Control\HTTPRequest;
+use ilateral\SilverStripe\Notifier\Notifier;
+use SilverStripe\Control\Middleware\HTTPMiddleware;
+use ilateral\SilverStripe\Notifier\DataObjectExtension;
 
 class NotificationMiddleware implements HTTPMiddleware
 {

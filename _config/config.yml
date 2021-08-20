@@ -1,10 +1,6 @@
 ---
 Name: notifierconfig
-After:
-  - requestprocessors
 ---
-SilverStripe\Core\Injector\Injector:
-  SilverStripe\Control\Director:
-    properties:
-      Middlewares:
-        NotificationMiddleware: '%ilateral\SilverStripe\Notifier\Middleware\NotificationMiddleware'
+SilverStripe\SiteConfig\SiteConfig:
+  extensions:
+    - ilateral\SilverStripe\Notifier\SiteConfigExtension
