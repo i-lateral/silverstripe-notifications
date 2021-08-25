@@ -18,7 +18,11 @@ class NotificationMiddleware implements HTTPMiddleware
         $registered = Config::inst()->get(Notifier::class, 'registered_objects');
 
         foreach ($registered as $classname) {
-            Config::modify()->set($classname, 'extensions', [DataObjectExtension::class]);
+            Config::modify()->merge(
+                $classname,
+                'extensions',
+                [DataObjectExtension::class]
+            );
         }
 
         return $delegate($request);
