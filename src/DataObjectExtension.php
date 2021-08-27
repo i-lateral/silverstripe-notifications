@@ -27,13 +27,6 @@ class DataObjectExtension extends DataExtension
         $notifications = Notification::get()
             ->filter('BaseClassName', $owner->ClassName);
 
-        // Get a list of all relevent rules
-        $rules = NotificationRule::get()->filter([
-            'Notification.BaseClassName' => $owner->ClassName,
-            'FieldName' => array_keys($changed_fields),
-            'Value:not' => null
-        ]);
-
         // if created, shortcut below logic
         if (in_array('ID', array_keys($changed_fields))) {
             Notifier::processNotifications(
@@ -42,6 +35,18 @@ class DataObjectExtension extends DataExtension
             );
             return;
         }
+
+        // If no fields were changed, then no need to continue
+        if (count(array_keys($changed_fields)) == 0) {
+            return;
+        }
+
+        // Get a list of all relevent rules
+        $rules = NotificationRule::get()->filter([
+            'Notification.BaseClassName' => $owner->ClassName,
+            'FieldName' => array_keys($changed_fields),
+            'Value:not' => null
+        ]);
 
         $rule_ids = $rules->filterByCallback(
             function($item, $list) use ($new_values) {
