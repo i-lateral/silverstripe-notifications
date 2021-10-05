@@ -28,6 +28,12 @@ class NotificationRule extends DataObject
         'Notification' => Notification::class
     ];
 
+    private static $summary_fields = [
+        'FieldName',
+        'Value',
+        'WasChanged'
+    ];
+
     private static $field_labels = [
         'FieldName' => 'Field Name',
         'WasChanged' => 'Was the field changed at all',
