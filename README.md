@@ -84,3 +84,42 @@ will be rendered using the newly created `Member`.
 The system is designed to fairly easily add new notification types (for example
 SMS notifications) You simply have to extend `NotificationType` and add your own
 `send` method to handle sending the notification.
+
+## Dynamic senders and recipients
+
+Instead of using a predefined sender and recipients, you can instead specify fields on the monitored object to use.
+
+Before you can do this though, you have to inform Notifier
+that you want to use custom fields. For example, if you have
+the following object:
+
+```php
+class MyMonitoredObject extends DataObject
+{
+  private static $db = [
+    'Sender' => 'Email',
+    'Recipient' => 'Email'
+  ];
+
+  private static $extensions = [
+    'ilateral\SilverStripe\Notifier'
+  ];
+}
+```
+
+You can add custom config:
+
+```yml
+ilateral\SilverStripe\Notifier\Types\NotificationType:
+  alt_from_fields:
+    MyMonitoredObject:
+      - Sender
+  alt_recipient_fields:
+    MyMonitoredObject:
+      - Recipient
+```
+
+Now, when you log into your admin area and visit:
+`Settings > Notifications` and setup a new notification
+you will see alternate dropdowns that let you select the
+field you would like yo use.
