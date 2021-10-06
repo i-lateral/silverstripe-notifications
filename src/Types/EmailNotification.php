@@ -36,20 +36,38 @@ class EmailNotification extends NotificationType
         return $this->renderString((string) $this->Subject);
     }
 
-    public function send($custom_recipient = null)
+    public function send(array $custom_recipients = [])
     {
-        $recipient = (empty($custom_recipent)) ? $this->Recipient : $custom_recipient;
-        $from = (empty($this->From)) ? Email::config()->admin_email : $this->From;
+        $recipients = array_merge(
+            $this->getRecipients(),
+            $custom_recipients
+        );
 
-        $email = Email::create();
-        $email
-            ->setTo($recipient)
-            ->setFrom($from)
-            ->setSubject($this->getRenderedSubject())
-            ->setData([
-                'Content' => $this->getRenderedContent(),
-            ])->setHTMLTemplate($this->config()->template)
-            ->send();
+        $from = $this->getSender();
+
+        if (empty($from)) {
+            $from =  Email::config()->admin_email;
+        }
+
+        foreach ($recipients as $recipient) {
+            // If recipient is blank for some reason
+            // then skip sending
+            $recipient = trim($recipient);
+
+            if (empty($recipient)) {
+                continue;
+            }
+
+            $email = Email::create();
+            $email
+                ->setTo($recipient)
+                ->setFrom($from)
+                ->setSubject($this->getRenderedSubject())
+                ->setData([
+                    'Content' => $this->getRenderedContent(),
+                ])->setHTMLTemplate($this->config()->template)
+                ->send();
+        }
         
         return;
     }
