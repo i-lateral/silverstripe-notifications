@@ -76,6 +76,13 @@ class NotificationType extends DataObject
      */
     protected $object;
 
+    /**
+     * Extra vars to be used when rendering
+     *
+     * @var array
+     */
+    protected $extra_vars = [];
+
     private static $db = [
         'From' => 'Varchar',
         'AltFrom' => 'Varchar',
@@ -349,9 +356,63 @@ class NotificationType extends DataObject
         }
 
         $viewer = SSViewer::fromString($string);
+
+        $vars = array_merge(
+            [ 'CurrType' => $this ],
+            $this->getExtraVars()
+        );
+
         return $viewer->process(
             $object,
-            [ 'CurrType' => $this ]
+            $vars
         );
+    }
+
+    /**
+     * Get extra vars to be used when rendering
+     *
+     * @return array
+     */ 
+    public function getExtraVars(): array
+    {
+        return $this->extra_vars;
+    }
+
+    /**
+     * Set extra vars to be used when rendering
+     *
+     * @param array $extra_vars
+     *
+     * @return self
+     */ 
+    public function setExtraVars(array $extra_vars): self
+    {
+        $this->extra_vars = $extra_vars;
+        return $this;
+    }
+
+    /**
+     * Add a variable to be used when rendering
+     *
+     * @return self
+     */ 
+    public function addExtraVar(string $name, mixed $value): self
+    {
+        $this->extra_vars[$name] = $value;
+        return $this;
+    }
+
+    /**
+     * Remove a variable to be used when rendering
+     *
+     * @return self
+     */ 
+    public function removeExtraVar(string $name): self
+    {
+        if (array_key_exists($name, $this->extra_vars)) {
+            unset($this->extra_vars[$name]);
+        }
+
+        return $this;
     }
 }
