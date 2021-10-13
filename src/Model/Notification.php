@@ -14,10 +14,12 @@ use ilateral\SilverStripe\Notifier\Types\NotificationType;
 use Symbiote\GridFieldExtensions\GridFieldAddNewMultiClass;
 
 /**
- * @param string BaseClassName
- * @param bool StateCreated
- * @param bool StateUpdated
- * @param bool StateDeleted
+ * @property string BaseClassName
+ * @property bool StateCreated
+ * @property bool StateUpdated
+ * @property bool StateDeleted
+ * @property string NotificationName
+ * @property string ObjectType
  *
  * @method HasManyList Rules
  * @method HasManyList Types
@@ -44,7 +46,13 @@ class Notification extends DataObject
         'Types' => NotificationType::class
     ];
 
+    private static $casting = [
+        'NotificationName' => 'Varchar',
+        'ObjectType' => 'Varchar'
+    ];
+
     private static $field_labels = [
+        'NotificationName' => 'Notification',
         'ObjectType' => 'Object to monitor',
         'BaseClassName' => 'Object to Monitor',
         'StateCreated' => 'Notify when created',
@@ -56,12 +64,18 @@ class Notification extends DataObject
     ];
 
     private static $summary_fields = [
+        'NotificationName',
         'ObjectType',
         'StateCreated',
         'StateUpdated',
         'StateDeleted',
         'Rules.Count'
     ];
+
+    public function getNotificationName(): string
+    {
+        return $this->singular_name();
+    }
 
     public function getObjectType(): string
     {
