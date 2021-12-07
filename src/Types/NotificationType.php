@@ -257,9 +257,96 @@ class NotificationType extends DataObject
         return (string)$sender;
     }
 
+    protected function getFieldsFromClass(string $class): array
+    {
+        $result = [];
+
+        $fields = [
+            'db' => (array)Config::inst()->get(
+                $class,
+                'db',
+                Config::UNINHERITED
+            ),
+            'casting' => (array)Config::inst()->get(
+                $class,
+                'casting',
+                Config::UNINHERITED
+            )
+        ];
+
+        foreach (array_values($fields) as $attrs) {
+            foreach (array_keys($attrs) as $name) {
+                $result[] = $name;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Attempt to generate a list possible template
+     * variables that can be used in the subject and
+     * content fields.
+     *
+     * @return array
+     */
+    protected function compilePossibleTemplateVars(): array
+    {
+        $result = [];
+        $base_class = $this->Notification()->BaseClassName;
+
+        if (!class_exists($base_class)) {
+            return $result;
+        }
+
+        // get all translated static properties as defined in i18nCollectStatics()
+        $ancestry = ClassInfo::ancestry($base_class);
+        $ancestry = array_reverse($ancestry);
+
+        foreach ($ancestry as $ancestorClass) {
+            // Finish at ViewableData
+            if ($ancestorClass === ViewableData::class) {
+                break;
+            }
+
+            $fields = $this->getFieldsFromClass($ancestorClass);
+
+            foreach ($fields as $name) {
+                $result[$name] = '{$' . $name . '}';
+            }
+
+            $relations = (array)Config::inst()->get(
+                $ancestorClass,
+                'has_one',
+                Config::UNINHERITED
+            );
+
+            foreach ($relations as $name => $related_class) {
+                $fields = $this->getFieldsFromClass($related_class);
+        
+                foreach (array_values($fields) as $related_name) {
+                    $result[$name . '.' . $related_name] = '{$' . $name . '.' . $related_name . '}';
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Generate a string of possible template vars
+     *
+     * @return string
+     */
+    protected function getRenderedTemplateVars(): string
+    {
+        $vars = $this->compilePossibleTemplateVars();
+        return implode('<br/>', array_values($vars));
+    }
+
     public function getCMSFields()
     {
-        $this->beforeUpdateCMSFields(function ($fields) {
+        $this->beforeUpdateCMSFields(function (FieldList $fields) {
             $alt_from_fields = $this->getAltFromFields();
             $alt_recipient_fields = $this->getAltRecipientFields();
 
@@ -294,6 +381,26 @@ class NotificationType extends DataObject
             } else {
                 $fields->removeByName('AltRecipient');
             }
+
+            // Add a list of possible variables to use in
+            // subject and content
+            $vars_field = LiteralField::create(
+                'TemplateVars',
+                HTML::createTag(
+                    'div',
+                    ['class' => 'px-4 py-2'],
+                    $this->getRenderedTemplateVars()
+                )
+            );
+
+            $fields->addFieldToTab(
+                'Root.Main',
+                ToggleCompositeField::create(
+                    'TemplateVarsComposite',
+                    _t(__CLASS__ . ".TemplateVars", 'Possible Template Variables'),
+                    $vars_field
+                )
+            );
         });
 
         return parent::getCMSFields();
