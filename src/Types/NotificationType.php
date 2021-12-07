@@ -5,10 +5,17 @@ namespace ilateral\SilverStripe\Notifier\Types;
 use LogicException;
 use SilverStripe\ORM\SS_List;
 use SilverStripe\View\SSViewer;
+use SilverStripe\Core\ClassInfo;
 use SilverStripe\ORM\DataObject;
+use SilverStripe\Forms\FieldList;
+use SilverStripe\View\ViewableData;
+use SilverStripe\Core\Config\Config;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\ORM\ValidationResult;
+use SilverStripe\Forms\ToggleCompositeField;
 use ilateral\SilverStripe\Notifier\Model\Notification;
+use SilverStripe\Forms\LiteralField;
+use SilverStripe\View\HTML;
 
 /**
  * Base Object for sending notifications
@@ -97,7 +104,8 @@ class NotificationType extends DataObject
 
     private static $casting = [
         'Type' => 'Varchar',
-        'RenderedContent' => 'Text'
+        'RenderedContent' => 'Text',
+        'Summary' => 'Varchar'
     ];
 
     private static $summary_fields = [
@@ -114,6 +122,16 @@ class NotificationType extends DataObject
     public function getType()
     {
         return $this->i18n_singular_name();
+    }
+
+    /**
+     * Attempt to generate a summary of this rule
+     *
+     * @return string
+     */
+    public function getSummary(): string
+    {
+        return $this->fieldLabel('Type') . ': ' . $this->Type;
     }
 
     /**

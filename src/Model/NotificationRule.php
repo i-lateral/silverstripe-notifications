@@ -8,9 +8,10 @@ use ilateral\SilverStripe\Notifier\Model\Notification;
 use SilverStripe\Forms\DropdownField;
 
 /**
- * @param string FieldName
- * @param string Value
- * @param bool WasChanged
+ * @property string FieldName
+ * @property string Value
+ * @property bool   WasChanged
+ * @property string Summary
  *
  * @method Notification Notification
  */
@@ -28,6 +29,10 @@ class NotificationRule extends DataObject
         'Notification' => Notification::class
     ];
 
+    private static $casting = [
+        'Summary' => 'Varchar'
+    ];
+
     private static $summary_fields = [
         'FieldName',
         'Value',
@@ -39,6 +44,24 @@ class NotificationRule extends DataObject
         'WasChanged' => 'Was the field changed at all',
         'Value' => 'Value is equal to'
     ];
+
+    /**
+     * Attempt to generate a summary of this rule
+     *
+     * @return string
+     */
+    public function getSummary(): string
+    {
+        $results = [$this->FieldName];
+
+        if ($this->WasChanged === true) {
+            $results[] = 'Changed';
+        } else {
+            $results[] = $this->Value;
+        }
+
+        return implode(': ', $results);
+    }
 
     /**
      * Get a list of valid field names and their labels

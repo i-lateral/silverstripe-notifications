@@ -11,3 +11,8 @@ Allow adding custom Notifications based on children of `Notification`
 ## 1.0.2
 
 Add ability to add custom variables to notification type rendering
+
+## 1.0.3
+
+* Add a basic summary of a notification to the main settings screen.
+* Add a list of possible variables to a notification type admin screen.

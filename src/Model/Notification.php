@@ -48,7 +48,8 @@ class Notification extends DataObject
 
     private static $casting = [
         'NotificationName' => 'Varchar',
-        'ObjectType' => 'Varchar'
+        'ObjectType' => 'Varchar',
+        'Summary' => 'Varchar'
     ];
 
     private static $field_labels = [
@@ -56,7 +57,7 @@ class Notification extends DataObject
         'ObjectType' => 'Object to monitor',
         'BaseClassName' => 'Object to Monitor',
         'StateCreated' => 'Notify when created',
-        'StateUpdated' => 'Notify when updated',
+        'StateUpdated' => 'Notify on any update',
         'StateDeleted' => 'Notify when deleted',
         'Rules' => 'Modification Rules',
         'Rules.Count' => '# of Rules',
@@ -66,9 +67,7 @@ class Notification extends DataObject
     private static $summary_fields = [
         'NotificationName',
         'ObjectType',
-        'StateCreated',
-        'StateUpdated',
-        'StateDeleted',
+        'Summary',
         'Rules.Count'
     ];
 
@@ -86,6 +85,41 @@ class Notification extends DataObject
         }
 
         return "";
+    }
+
+    /**
+     * Attempt to generate a summary of this notification
+     * and its rules
+     *
+     * @return string
+     */
+    public function getSummary(): string
+    {
+        $results = [];
+
+        if ($this->StateCreated == true) {
+            $results[] = _t(__CLASS__ . '.OnCreated', 'On Created');
+        }
+
+        if ($this->StateUpdated == true) {
+            $results[] = _t(__CLASS__ . '.AnyUpdate', 'Any Update');
+        }
+
+        if ($this->StateDeleted == true) {
+            $results[] =  _t(__CLASS__ . '.OnDeleted', 'On Deleted');
+        }
+
+        foreach ($this->Rules() as $rule) {
+            /** @var NotificationRule $rule */
+            $results[] = $rule->Summary;
+        }
+
+        foreach ($this->Types() as $type) {
+            /** @var NotificationType $type */
+            $results[] = $type->Summary;
+        }
+
+        return implode('; ', $results);
     }
 
     public function getCMSFields()
