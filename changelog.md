@@ -16,3 +16,8 @@ Add ability to add custom variables to notification type rendering
 
 * Add a basic summary of a notification to the main settings screen.
 * Add a list of possible variables to a notification type admin screen.
+
+## 1.0.4
+
+* Improve layout of notification creation slightly
+* Add notification rule selection via classname dropdown

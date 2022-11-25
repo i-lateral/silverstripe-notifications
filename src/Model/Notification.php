@@ -11,6 +11,7 @@ use SilverStripe\Forms\GridField\GridField;
 use ilateral\SilverStripe\Notifier\Notifier;
 use SilverStripe\Forms\GridField\GridFieldAddNewButton;
 use ilateral\SilverStripe\Notifier\Types\NotificationType;
+use SilverStripe\Forms\GridField\GridFieldAddExistingAutocompleter;
 use Symbiote\GridFieldExtensions\GridFieldAddNewMultiClass;
 
 /**
@@ -143,6 +144,21 @@ class Notification extends DataObject
 
                 if (!empty($rules_field)) {
                     $config = $rules_field->getConfig();
+                    $classes = array_values(
+                        ClassInfo::subclassesFor(
+                            NotificationRule::class,
+                            true
+                        )
+                    );
+                    $rules = new GridFieldAddNewMultiClass("buttons-before-right");
+                    $rules->setClasses($classes);
+
+                    $config
+                        ->removeComponentsByType(GridFieldAddNewButton::class)
+                        ->removeComponentsByType(GridFieldAddExistingAutocompleter::class)
+                        ->addComponent($rules);
+
+                    $rules_field->setConfig($config);
 
                     $fields->addFieldToTab('Root.Main', $rules_field);
                 }
@@ -158,11 +174,12 @@ class Notification extends DataObject
                             false
                         )
                     );
-                    $type = new GridFieldAddNewMultiClass();
+                    $type = new GridFieldAddNewMultiClass("buttons-before-right");
                     $type->setClasses($classes);
 
                     $config
                         ->removeComponentsByType(GridFieldAddNewButton::class)
+                        ->removeComponentsByType(GridFieldAddExistingAutocompleter::class)
                         ->addComponent($type);
                     
                     $types_field->setConfig($config);
