@@ -1,5 +1,7 @@
 # SilverStripe Notifications System
 
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/i-lateral/silverstripe-notifications/badges/quality-score.png?b=1)](https://scrutinizer-ci.com/g/i-lateral/silverstripe-notifications/?branch=1) [![Build Status](https://scrutinizer-ci.com/g/i-lateral/silverstripe-notifications/badges/build.png?b=1)](https://scrutinizer-ci.com/g/i-lateral/silverstripe-notifications/build-status/1)
+
 Module to allow creation of custom notifications for object
 changes that can be managed via the admin.
 
@@ -57,6 +59,21 @@ to specify:
 `WasChanged`: If you leave `Value` blank, then you can check `WasChanged` and
               then any change to this field will send a notification
 
+### Disallow Notification Rules (optional)
+
+You can disallow notification rules on specific notifications
+via the `disallow_rules` config variable. This needs to be a 
+list of rule classnames that this notification type will not
+allow. This can be set in YML as follows:
+
+    ---
+    Name: notificationsconfig
+    ---
+    # Disallow basic notification rule
+    ilateral\SilverStripe\Notifier\Model\Notification:
+      disallow_rules:
+        - ilateral\SilverStripe\Notifier\Model\Notification\NotificationRule
+
 ### Adding Notification Types
 
 Once you have specified an object to monitor and what will trigger notifications
@@ -68,6 +85,21 @@ to the desired recipient using the provided subject and content.
 You can add multiple versions of the each `NotificationType` to the same
 `Notification` (for example, if you want to email multiple people in the event
 of a change).
+
+### Disallow Notification Types (optional)
+
+You can disallow notification types on specific notifications
+via the `disallow_types` config variable. This needs to be a 
+list of rule classnames that this notification type will not
+allow. This can be set in YML as follows:
+
+    ---
+    Name: notificationsconfig
+    ---
+    # Disallow email notification type
+    ilateral\SilverStripe\Notifier\Model\Notification:
+      disallow_types:
+        - ilateral\SilverStripe\Notifier\Types\EmailNotification
 
 ### Content Rendering
 
