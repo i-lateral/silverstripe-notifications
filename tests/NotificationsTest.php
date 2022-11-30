@@ -7,13 +7,18 @@ use SilverStripe\Dev\SapphireTest;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Control\Email\Mailer;
 use SilverStripe\Core\Injector\Injector;
+use ilateral\SilverStripe\Notifier\Model\Notification;
 use ilateral\SilverStripe\Notifier\DataObjectExtension;
-use ilateral\SilverStripe\Notifier\Tests\Objects\TestChangeNameObject;
+use ilateral\SilverStripe\Notifier\Model\NotificationRule;
+use ilateral\SilverStripe\Notifier\Tests\Objects\TestRule;
+use ilateral\SilverStripe\Notifier\Types\NotificationType;
+use ilateral\SilverStripe\Notifier\Types\EmailNotification;
 use ilateral\SilverStripe\Notifier\Tests\Objects\TestCreateObject;
 use ilateral\SilverStripe\Notifier\Tests\Objects\TestDeleteObject;
-use ilateral\SilverStripe\Notifier\Tests\Objects\TestStatusPaidObject;
-use ilateral\SilverStripe\Notifier\Tests\Objects\TestSubjectObject;
 use ilateral\SilverStripe\Notifier\Tests\Objects\TestUpdateObject;
+use ilateral\SilverStripe\Notifier\Tests\Objects\TestSubjectObject;
+use ilateral\SilverStripe\Notifier\Tests\Objects\TestChangeNameObject;
+use ilateral\SilverStripe\Notifier\Tests\Objects\TestStatusPaidObject;
 
 class NotificationsTest extends SapphireTest
 {
@@ -44,6 +49,58 @@ class NotificationsTest extends SapphireTest
             DataObjectExtension::class,
             Config::inst()->get(TestDeleteObject::class, 'extensions')
         );
+    }
+
+    public function testGetAllowedRules()
+    {
+        /** @var Notification */
+        $notification = Injector::inst()->get(Notification::class, true);
+
+        $rules = $notification->getAllowedRules();
+
+        $this->assertContains(NotificationRule::class, $rules);
+        $this->assertContains(TestRule::class, $rules);
+        $this->assertTrue($notification->isRuleAllowed(NotificationRule::class));
+        $this->assertTrue($notification->isRuleAllowed(TestRule::class));
+
+        Config::modify()->set(
+            Notification::class,
+            'disallow_rules',
+            [TestRule::class]
+        );
+
+        $rules = $notification->getAllowedRules();
+
+        $this->assertContains(NotificationRule::class, $rules);
+        $this->assertNotContains(TestRule::class, $rules);
+        $this->assertTrue($notification->isRuleAllowed(NotificationRule::class));
+        $this->assertFalse($notification->isRuleAllowed(TestRule::class));
+    }
+
+    public function testGetAllowedTypes()
+    {
+        /** @var Notification */
+        $notification = Injector::inst()->get(Notification::class, true);
+
+        $types = $notification->getAllowedTypes();
+
+        $this->assertNotContains(NotificationType::class, $types);
+        $this->assertContains(EmailNotification::class, $types);
+        $this->assertFalse($notification->isTypeAllowed(NotificationType::class));
+        $this->assertTrue($notification->isTypeAllowed(EmailNotification::class));
+
+        Config::modify()->set(
+            Notification::class,
+            'disallow_types',
+            [EmailNotification::class]
+        );
+
+        $types = $notification->getAllowedTypes();
+
+        $this->assertContains(NotificationType::class, $types);
+        $this->assertNotContains(EmailNotification::class, $types);
+        $this->assertTrue($notification->isTypeAllowed(NotificationType::class));
+        $this->assertFalse($notification->isTypeAllowed(EmailNotification::class));
     }
 
     public function testCreatedEmails()
