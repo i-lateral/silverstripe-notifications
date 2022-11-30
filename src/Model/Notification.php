@@ -11,6 +11,8 @@ use SilverStripe\Forms\GridField\GridField;
 use ilateral\SilverStripe\Notifier\Notifier;
 use SilverStripe\Forms\GridField\GridFieldAddNewButton;
 use ilateral\SilverStripe\Notifier\Types\NotificationType;
+use LogicException;
+use SilverStripe\Core\Config\Config;
 use SilverStripe\Forms\GridField\GridFieldAddExistingAutocompleter;
 use Symbiote\GridFieldExtensions\GridFieldAddNewMultiClass;
 
@@ -72,9 +74,28 @@ class Notification extends DataObject
         'Rules.Count'
     ];
 
+    /**
+     * Add to this list of classnames to disallow particular rules
+     * from being selectable
+     *
+     * @var array[string]
+     */
+    private static $disallow_rules = [];
+
+
+    /**
+     * Add to this list of classnames to disallow particular types
+     * from being selectable
+     *
+     * @var array[string]
+     */
+    private static $disallow_types = [
+        NotificationType::class
+    ];
+
     public function getNotificationName(): string
     {
-        return $this->singular_name();
+        return $this->i18n_singular_name();
     }
 
     public function getObjectType(): string
@@ -86,6 +107,28 @@ class Notification extends DataObject
         }
 
         return "";
+    }
+
+    public function getAllowedRules(): array
+    {
+        return $this->getAllowed(NotificationRule::class, 'disallow_rules');
+    }
+
+    public function isRuleAllowed(string $classname): bool
+    {
+        $rules = $this->getAllowedRules();
+        return in_array($classname, $rules);
+    }
+
+    public function getAllowedTypes(): array
+    {
+        return $this->getAllowed(NotificationType::class, 'disallow_types');
+    }
+
+    public function isTypeAllowed(string $classname): bool
+    {
+        $types = $this->getAllowedTypes();
+        return in_array($classname, $types);
     }
 
     /**
@@ -144,12 +187,8 @@ class Notification extends DataObject
 
                 if (!empty($rules_field)) {
                     $config = $rules_field->getConfig();
-                    $classes = array_values(
-                        ClassInfo::subclassesFor(
-                            NotificationRule::class,
-                            true
-                        )
-                    );
+                    $classes = $this->getAllowedRules();
+                    
                     $rules = new GridFieldAddNewMultiClass("buttons-before-right");
                     $rules->setClasses($classes);
 
@@ -168,12 +207,8 @@ class Notification extends DataObject
 
                 if (!empty($types_field)) {
                     $config = $types_field->getConfig();
-                    $classes = array_values(
-                        ClassInfo::subclassesFor(
-                            NotificationType::class,
-                            false
-                        )
-                    );
+                    $classes = $this->getAllowedTypes();
+
                     $type = new GridFieldAddNewMultiClass("buttons-before-right");
                     $type->setClasses($classes);
 
@@ -190,5 +225,28 @@ class Notification extends DataObject
         );
 
         return parent::getCMSFields();
+    }
+
+    /**
+     * Return a list of allowed (rules or types) for this 
+     */
+    protected function getAllowed(string $classname, string $setting): array
+    {
+        $possible = ClassInfo::subclassesFor($classname, true);
+        $disallow = Config::inst()->get(self::class, $setting);
+
+        if (!is_array($disallow)) {
+            throw new LogicException('Disallow Types must be an array');
+        }
+
+        $classes = [];
+        
+        foreach (array_values($possible) as $class) {
+            if (!in_array($class, $disallow)) {
+                $classes[] = $class;
+            }
+        }
+            
+        return $classes;
     }
 }
