@@ -34,16 +34,23 @@ class NotificationRule extends DataObject
     ];
 
     private static $summary_fields = [
+        'RuleName',
         'FieldName',
         'Value',
         'WasChanged'
     ];
 
     private static $field_labels = [
+        'RuleName' => 'Name',
         'FieldName' => 'Field Name',
         'WasChanged' => 'Was the field changed at all',
         'Value' => 'Value is equal to'
     ];
+
+    public function getRuleName(): string
+    {
+        return $this->i18n_singular_name();
+    }
 
     /**
      * Attempt to generate a summary of this rule
