@@ -44,6 +44,10 @@ class EmailNotification extends NotificationType
         );
 
         $from = $this->getSender();
+        $template = $this->config()->template;
+        $object = $this->getObject();
+        $subject = $this->getRenderedSubject();
+        $content = $this->getRenderedContent();
 
         if (empty($from)) {
             $from =  Email::config()->admin_email;
@@ -58,17 +62,17 @@ class EmailNotification extends NotificationType
                 continue;
             }
 
-            $email = Email::create();
-            $email
+            Email::create()
                 ->setTo($recipient)
                 ->setFrom($from)
-                ->setSubject($this->getRenderedSubject())
+                ->setSubject($subject)
                 ->setData([
-                    'Content' => $this->getRenderedContent(),
-                ])->setHTMLTemplate($this->config()->template)
+                    'Object' => $object,
+                    'Content' => $content
+                ])->setHTMLTemplate($template)
                 ->send();
         }
-        
+
         return;
     }
 }

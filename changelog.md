@@ -22,3 +22,8 @@ Add ability to add custom variables to notification type rendering
 * Improve layout of notification creation slightly
 * Add notification rule selection via classname dropdown
 * Allow disabling specific rules and types on notifications
+
+## 1.0.5
+
+* Add current object to email template
+* Clean up email send layout a little
