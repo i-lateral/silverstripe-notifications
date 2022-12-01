@@ -49,6 +49,11 @@ class Notification extends DataObject
         'Types' => NotificationType::class
     ];
 
+    private static $cascade_deletes = [
+        'Rules',
+        'Types'
+    ];
+
     private static $casting = [
         'NotificationName' => 'Varchar',
         'ObjectType' => 'Varchar',
