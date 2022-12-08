@@ -28,3 +28,4 @@ Add ability to add custom variables to notification type rendering
 * Add current object to email template
 * Clean up email send layout a little
 * Add missing cascade deletes
+* Allow passing custom data to the email send method

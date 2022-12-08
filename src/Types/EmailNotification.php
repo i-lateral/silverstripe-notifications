@@ -36,8 +36,10 @@ class EmailNotification extends NotificationType
         return $this->renderString((string) $this->Subject);
     }
 
-    public function send(array $custom_recipients = [])
-    {
+    public function send(
+        array $custom_recipients = [],
+        array $custom_data = []
+    ) {
         $recipients = array_merge(
             $this->getRecipients(),
             $custom_recipients
@@ -48,6 +50,11 @@ class EmailNotification extends NotificationType
         $object = $this->getObject();
         $subject = $this->getRenderedSubject();
         $content = $this->getRenderedContent();
+        $data = [
+            'Object' => $object,
+            'Content' => $content
+        ];
+        $data = array_merge($data, $custom_data);
 
         if (empty($from)) {
             $from =  Email::config()->admin_email;
@@ -66,10 +73,8 @@ class EmailNotification extends NotificationType
                 ->setTo($recipient)
                 ->setFrom($from)
                 ->setSubject($subject)
-                ->setData([
-                    'Object' => $object,
-                    'Content' => $content
-                ])->setHTMLTemplate($template)
+                ->setData($data)
+                ->setHTMLTemplate($template)
                 ->send();
         }
 
